@@ -125,6 +125,7 @@ function showUser(user) {
    
     var intake = NineteenGale.getIntake()
     console.log("intake "+intake);
+    intake = {"personalInfo":{"firstName":"Aaron","lastName":"Cook","dateOfBirth":"1948-02-14","gender":"Male","genderIndex":2},"insurance":{"hasInsurance":false,"noInsurance":true,"insurancePlanNotListed":false,"insuranceName":"","insuranceID":""},"sessionid":"e0a15299-3cb2-4c61-bd76-9841adffb939","patientContactInfo":{"email":"","phoneNumber":""},"patientPhysiqueInfo":{"height":{"cm":"","feet":"5","inch":"9","heightUnit":"ft"},"weight":{"weight":"165","weightUnit":"lbs"}},"patientPreferredFilterInfo":{"filterIndex":5}}
     NineteenGale.setIntake(intake);
     if ((typeof userel != 'undefined') && (userel != null)) {
         if (user.islogin) {
