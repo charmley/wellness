@@ -82,10 +82,10 @@ getIntake: function getIntake(){
 },
 
 setIntake: function setIntake(intake){
-    console.log("set intake ");
+    console.log("set intake " + intake);
     if (typeof NineteenGaleAPI != 'undefined') {
         console.log("calling setIntake");
-        var intake = NineteenGaleAPI.setIntake(intake);
+        NineteenGaleAPI.setIntake(intake);
         console.log("intake is "+intake);
     }
 },
