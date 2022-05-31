@@ -1,9 +1,654 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="refresh" content="7; url='./v2.html'" />
-  </head>
-  <body>
-    <p>Please follow <a href="./v2.html">this link</a>.</p>
-  </body>
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Wellness API (v2) test</title>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(registration => {
+          console.log('Service worker registered: ', registration);
+        }).catch(registrationError => {
+          console.log('Service worker registration failed: ', registrationError);
+        });
+      });
+    }
+  </script>
+
+  <script type="module">
+    import { GaleAPIBridge } from "https://unpkg.com/@19labs/gale-wellness/dist/dev/bridge.js"
+    import { init } from "https://unpkg.com/@19labs/gale-wellness/dist/dev/dom.js"
+    const bridge = new GaleAPIBridge({
+      // add your API key here
+      apiKey: "CC7EF0386079F583ED5FBA8C6054A1130D34E6C4F299122120070569F9E3FBEA",
+      simulatorPort: null
+    })
+
+    // expose globals
+    window.bridge = bridge
+
+  </script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+
+</head>
+
+<body>
+  <main>
+    <div class="container">
+      <header class="normal">
+        <div class="row spaced">
+          <div class="row">
+            <div id="user-label">User:</div>
+            <div id="user" class="label-value">unknown</div>
+          </div>
+          <div>
+            <div>API V2 Page</div>
+          </div>
+          <div class="row">
+            <div id="language-label" class="right">Language:</div>
+            <div id="lang" class="label-value">unknown</div>
+          </div>
+        </div>
+        <hr>
+      </header>
+      <div class="w3-bar w3-black">
+        <button id="menu-tab" class="w3-bar-item w3-button" onclick="openTab('tab', 'menus')">Menus</button>
+        <button id="clinic-tab" class="w3-bar-item w3-button" onclick="openTab('tab', 'clinics')">Clinics</button>
+        <button id="measurement-tab" class="w3-bar-item w3-button"
+          onclick="openTab('tab', 'measurements')">Measurements</button>
+        <button id="intake-tab" class="w3-bar-item w3-button" onclick="openTab('tab', 'set-intake')">Set Intake</button>
+        <button id="health-history-tab" class="w3-bar-item w3-button" onclick="openTab('tab', 'set-health-history')">Set
+          Health History</button>
+        <button id="files-tab" class="w3-bar-item w3-button" onclick="openTab('tab', 'files')">Get/Set Files</button>
+        <button id="document-tab" class="w3-bar-item w3-button" onclick="openTab('tab', 'documents')">Add External Document</button>
+        <button class="w3-bar-item w3-button" onclick="window.location.href='v1.html'">Go to API V1 Page</button>
+      </div>
+      <hr>
+      <div class="tab" id="menus">
+        <h4 id="user-actions">User Actions</h4>
+        <div class="btn-view">
+          <button id="show-login" class="btn-default" onclick="NineteenGaleBridge.showLogin()">login</button>
+          <button id="show-signup" class="btn-default" onclick="NineteenGaleBridge.showSignup()">signup</button>
+          <button id="show-new-session" class="btn-default" onclick="NineteenGaleBridge.showNewSession()">new
+            session</button>
+          <button id="save-session" class="btn-default" onclick="NineteenGaleBridge.saveCurrentPatientProfile()">save
+            session</button>
+          <button id="end-session" class="btn-default" onclick="NineteenGaleBridge.endSession()">End Session</button>
+          <button id="submit-url" class="btn-default"
+            onclick="NineteenGaleBridge.submitProxyUrl('https://active.19labs.com/test/index.html','abc=def')">post test
+            url</button>
+          <button id="print" class="btn-default" onclick="NineteenGaleBridge.print()">Print</button>
+        </div>
+        <h4>Menu Pages</h4>
+        <div class="btn-view">
+          <button id="show-call-center" class="btn-default" onclick="NineteenGaleBridge.showCallCenter()">call
+            Center</button>
+          <button id="show-wellness" class="btn-default" onclick="NineteenGaleBridge.showWellness()">wellness</button>
+          <button id="show-intake" class="btn-default" onclick="NineteenGaleBridge.showIntake()">intake</button>
+          <button id="show-sensors" class="btn-default" onclick="NineteenGaleBridge.showSensors()">Sensors</button>
+          <button id="show-summary" class="btn-default" onclick="NineteenGaleBridge.showSummary()">Summary</button>
+          <button id="share-summary" class="btn-default" onclick="NineteenGaleBridge.shareSummary()">Share
+            Summary</button>
+          <button id="send-summary-email" class="btn-default"
+            onclick="NineteenGaleBridge.sendSummaryEmail('debug@19labs.com', 'This is a custom body for testing')">Send
+            Summary Email</button>
+        </div>
+        <h4>Sensor Pages</h4>
+        <div class="btn-view">
+          <button id="show-blood-pressure" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Blood Pressure Monitor')">BP</button>
+          <button id="show-pox" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Pulse Oximeter')">pox</button>
+          <button id="show-thermometer" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Thermometer')">thermometer</button>
+          <button id="show-weight" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Weight Scale')">scale</button>
+          <button id="show-stethoscope" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Stethoscope')">stethoscope</button>
+          <button id="show-glucometer" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Glucometer')">glucometer</button>
+          <button id="show-camera" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Internal Camera')">camera</button>
+          <button id="show-otoscope" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Otoscope')">otoscope</button>
+          <button id="show-spirometer" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Spirometer')">Spirometer</button>
+          <button id="show-multifunction" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('Multifunction Test')">Multifunction</button>
+          <button id="show-external-app" class="btn-default"
+            onclick="NineteenGaleBridge.showSensor('External App')">externalapp</button>
+        </div>
+        <div class="row spaced">
+          <div class="column">
+            <div id="name" class="normal">name</div>
+            <div id="name-data" class="label-value">0</div>
+          </div>
+          <div class="column">
+            <div id="serial" class="normal">Serial</div>
+            <div id="serial-data" class="label-value">0</div>
+          </div>
+          <div class="column">
+            <div id="location" class="normal">Location</div>
+            <div id="location-data" class="label-value"></div>
+          </div>
+        </div>
+        <div class="row spaced">
+          <div class="column">
+            <div id="intake" class="normal">intake</div>
+            <div id="intake-data" class="label-value">intake</div>
+          </div>
+          <div class="column">
+            <div id="sensor" class="normal">sensor</div>
+            <div id="sensor-data" class="label-value">sensor</div>
+          </div>
+          <div class="column">
+            <div id="proxy" class="normal">proxyresult</div>
+            <div id="proxy-result" class="label-value">proxyresult</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab" id="clinics" style="display:none">
+        <h4 id="clinics-header">Clinics<h4>
+            <div class="row">
+              <div class="column">
+                <div>
+                  <label for="clinic" class="small-text" id="clinic-name-label">Clinic Name:</label>
+                  <input type="text" id="clinic">
+                  <div class="row">
+                    <button id="select-clinic" class="btn-default" onclick="selectClinic()">select</button>
+                    <button id="show-clinic" class="btn-default" onclick="NineteenGaleBridge.showClinic('default')">show
+                      clinic
+                      default</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-1"></div>
+              <div class="column">
+                <div class="row">
+                  <div>
+                    <button class="btn-default" onclick="getClinics()">getClinics</button>
+                  </div>
+                  <textarea readonly id="clinic-display"></textarea>
+                </div>
+              </div>
+            </div>
+      </div>
+      <div class="tab" id="measurements" style="display:none">
+        <div class="w3-bar w3-black">
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'blood-pressure')">Blood
+            Pressure</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'pulse-ox')">Pulse Oximeter</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'thermometer')">Thermometer</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'glucometer')">Glucometer</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'weight-scale')">Weight Scale</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'spirometer')">Spirometer</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'multifunction')">Multifunction</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'sensor-list')">Sensor List</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('measurement', 'miscellaneous')">Miscellaneous</button>
+        </div>
+        <hr>
+        <div class="measurement" id="blood-pressure" style="display:none">
+          <h4>Blood Presssure</h4>
+          <div class="row">
+            <button id="take-blood-pressure-measurement" class="btn-default" onclick="addBloodPressureData()">Take
+              Measurement</button>
+            <div class="spaced">
+              <div>
+                <label for="sys" class="small-text">SYS:</label>
+                <input type="text" id="sys" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="dia" class="small-text">DIA:</label>
+                <input type="text" id="dia" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="pulse" class="small-text">Pulse:</label>
+                <input type="text" id="pulse" class="measurement-textbox">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="pulse-ox" style="display:none">
+          <h4>Pulse Oximeter</h4>
+          <div class="row">
+            <button id="take-pulse-ox-measurement" class="btn-default" onclick="addPulseOxData()">Take
+              Measurement</button>
+            <div class="spaced">
+              <div>
+                <label for="oxygen" class="small-text">Sp02:</label>
+                <input type="text" id="oxygen" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="pulse" class="small-text">PR:</label>
+                <input type="text" id="pulse" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="perfusion" class="small-text">PI:</label>
+                <input type="text" id="perfusion" class="measurement-textbox">
+              </div>
+              <div class="padded-top">
+                <label for="respirationRate" class="small-text">RR:</label>
+                <input type="text" id="respirationRate" class="measurement-textbox">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="thermometer" style="display:none">
+          <h4>Thermometer</h4>
+          <div class="row">
+            <button id="take-thermometer-measurement" class="btn-default" onclick="addThermometerData()">Take
+              Measurement</button>
+            <div class="spaced">
+              <div>
+                <label for="temp" class="small-text" id="temperature-label">Temperature:</label>
+                <input type="text" id="temp" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="unit" class="small-text" id="temperature-unit-label">Unit:</label>
+                <select id="thermometer-unit">
+                  <option value="fahrenheit">°F</option>
+                  <option value="celsius">°C</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="glucometer" style="display:none">
+          <h4>Glucometer</h4>
+          <div class="row">
+            <button id="take-glucometer-measurement" class="btn-default" onclick="addGlucometerData()">Take
+              Measurement</button>
+            <div class="spaced">
+              <div>
+                <label for="glucometer-blood-sugar" class="small-text" id="blood-sugar-label">Blood Sugar:</label>
+                <input type="text" id="glucometer-blood-sugar" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="unit" class="small-text" id="blood-sugar-unit-label">Unit:</label>
+                <select id="glucometer-unit">
+                  <option value="mg/dL">mg/dL</option>
+                  <option value="mmol/L">mmol/L</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="weight-scale" style="display:none">
+          <h4>Weight Scale</h4>
+          <div class="row">
+            <button id="take-weight-scale-measurement" class="btn-default" onclick="addWeightScaleData()">Take
+              Measurement</button>
+            <div class="spaced">
+              <div>
+                <label for="weight" class="small-text">Weight:</label>
+                <input type="text" id="weight" class="measurement-textbox">
+              </div>
+              <div>
+                <label for="unit" class="small-text" id="weight-unit-label">Unit:</label>
+                <select id="weight-scale-unit" name="unit">
+                  <option value="lbs">lbs</option>
+                  <option value="kg">kg</option>
+                </select>
+              </div>
+              <div>
+                <label for="bmi" class="small-text">BMI:</label>
+                <input type="text" id="bmi" class="measurement-textbox">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="spirometer" style="display:none">
+          <h4>Spirometer</h4>
+          <div class="row">
+            <button id="take-spirometer-measurement" class="btn-default" onclick="addSpirometerData()">Take
+              Measurement</button>
+            <div class="btn-view">
+              <div class="padded-top">
+                <label for="pef" class="small-text">PEF:</label>
+                <input type="text" id="pef" class="measurement-textbox" placeholder="L/m">
+              </div>
+              <div class="padded-top">
+                <label for="fvc" class="small-text">FVC:</label>
+                <input type="text" id="fvc" class="measurement-textbox" placeholder="L">
+              </div>
+              <div class="padded-top">
+                <label for="fef2575" class="small-text">FEF2575:</label>
+                <input type="text" id="fef2575" class="measurement-textbox" placeholder="L">
+              </div>
+              <div class="padded-top">
+                <label for="fev6" class="small-text">FEV6:</label>
+                <input type="text" id="fev6" class="measurement-textbox" placeholder="L">
+              </div>
+              <div class="padded-top">
+                <label for="fev1" class="small-text">FEV1:</label>
+                <input type="text" id="fev1" class="measurement-textbox" placeholder="L">
+              </div>
+              <div class="padded-top">
+                <label for="fev1-fvc" class="small-text">FEV1/FVC:</label>
+                <input type="text" id="fev1-fvc" class="measurement-textbox" placeholder="%">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="multifunction" style="display:none">
+          <h4>Multifunction</h4>
+          <div class="row">
+            <button class="btn-default" onclick="addMultifunctionData()">Take Measurement</button>
+            <div class="btn-view">
+              <div class="padded-top">
+                <label for="multifunction-blood-sugar" class="small-text">Blood Sugar:</label>
+                <input type="text" id="multifunction-blood-sugar" name="multifunction-blood-sugar"
+                  class="measurement-textbox">
+                <input type="radio" name="blood-sugar-unit" value="mg/dL" id="mg-dL" checked>
+                <label for="mg-dL" class="small-text">mg/dL</label>
+                <input type="radio" name="blood-sugar-unit" value="mmol/L" id="mmol-L">
+                <label for="mmol-L" class="small-text">mmol/L</label>
+              </div>
+              <div class="padded-top">
+                <label for="keytone" class="small-text">Keytone:</label>
+                <input type="text" id="keytone" class="measurement-textbox" placeholder="mmol/L">
+              </div>
+              <div class="padded-top">
+                <label for="lactate" class="small-text">Lactate:</label>
+                <input type="text" id="lactate" class="measurement-textbox" placeholder="mmol/L">
+              </div>
+              <div class="padded-top">
+                <label for="cholesterol" class="small-text">Cholesterol:</label>
+                <input type="text" id="cholesterol" class="measurement-textbox" placeholder="mg/dL">
+              </div>
+              <div class="padded-top">
+                <label for="uric-acid" class="small-text">Uric Acid:</label>
+                <input type="text" id="uric-acid" class="measurement-textbox" placeholder="mg/dL">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="measurement" id="sensor-list" style="display:none">
+          <h4>Sensor List</h4>
+          <div class="row">
+            <div>
+              <button id="get-sensors" class="btn-default" onclick="getSensors()">Show
+                Sensors</button>
+            </div>
+            <textarea id="sensor-list-box"></textarea>
+          </div>
+        </div>
+        <div class="measurement" id="miscellaneous" style="display:none">
+          <h4>Miscellaneous</h4>
+          <hr>
+          <div class="row">
+            <div class="btn-view">
+              <div class="padded-top">
+                <label for="name" class="small-text" id="name-label">Name:</label>
+                <input type="text" id="name" class="measurement-textbox">
+              </div>
+              <div class="padded-top">
+                <label for="value" class="small-text" id="value-label">Value:</label>
+                <input type="text" id="value" class="measurement-textbox">
+              </div>
+              <div class="padded-top">
+                <label for="units" class="small-text" id="units-label">Units:</label>
+                <input type="text" id="units" class="measurement-textbox">
+              </div>
+              <div class="padded-top">
+                <label for="device" class="small-text" id="device-label">Device:</label>
+                <input type="text" id="device" class="measurement-textbox">
+              </div>
+            </div>
+            <button id="set-measurement" class="btn-default" onclick="setMeasurement()">Set Measurement</button>
+          </div>
+          <hr>
+          <div>
+            <textarea id="note" class="note-box"></textarea>
+          </div>
+          <button id="set-note" class="btn-default" onclick="setNote()">Set Note</button>
+        </div>
+      </div>
+      <div class="tab" id="set-intake" style="display:none">
+        <h4>Set Intake</h4>
+        <hr>
+        <div class="row spaced">
+          <div class="column">
+            <div class="padded-top">
+              <label for="first-name" class="small-text" id="first-name-label">First Name:</label>
+              <input type="text" id="first-name">
+            </div>
+            <div class="padded-top">
+              <label for="last-name" class="small-text" id="last-name-label">Last Name:</label>
+              <input type="text" id="last-name">
+            </div>
+            <div class="padded-top">
+              <label for="date" class="small-text" id="date-of-birth-label">Date of Birth:</label>
+              <input type="date" id="date">
+            </div>
+            <div class="padded-top">
+              <label for="gender" class="small-text" id="gender-label">Gender:</label>
+              <select id="gender" name="gender">
+                <option value=""></option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="padded-top">
+              <label class="small-text" id="height-label">Height:</label>
+              <div class="row spaced">
+                <div>
+                  <input type="radio" id="imperial-height" name="height-unit" value="imperial" checked>
+                  <label for="imperial-height" class="small-text">ft</label>
+                </div>
+                <div>
+                  <input type="text" id="ft" name="ft" class="measurement-textbox" placeholder="ft">
+                  <input type="text" id="inch" name="inch" class="measurement-textbox" placeholder="inch">
+                </div>
+              </div>
+              <div class="row spaced">
+                <div>
+                  <input type="radio" id="metric-height" name="height-unit" value="metric">
+                  <label for="metric-height" class="small-text">cm</label>
+                </div>
+                <div>
+                  <input type="text" id="cm" name="cm" class="measurement-textbox" placeholder="cm">
+                  <input type="text" class="measurement-textbox" disabled>
+                </div>
+              </div>
+            </div>
+            <div class="padded-top">
+              <label class="small-text" id="weight-label">Weight:</label>
+              <div class="row spaced">
+                <div>
+                  <input type="radio" id="imperial-weight" name="weight-unit" value="imperial" checked>
+                  <label for="imperial" class="small-text">lbs</label>
+                </div>
+                <div>
+                  <input type="text" id="lbs" name="lbs" class="measurement-textbox" placeholder="lbs">
+                  <input type="text" class="measurement-textbox" disabled>
+                </div>
+              </div>
+              <div class="row spaced">
+                <div>
+                  <input type="radio" id="metric-weight" name="weight-unit" value="metric">
+                  <label for="metric" class="small-text">kg</label>
+                </div>
+                <div>
+                  <input type="text" id="kg" name="kg" class="measurement-textbox" placeholder="kg">
+                  <input type="text" class="measurement-textbox" disabled>
+                </div>
+              </div>
+              <button class="btn-default" onclick="setIntake()">Set Intake</button>
+            </div>
+          </div>
+          <div class="column">
+            <div>
+              <input type="radio" id="has-insurance" name="insurance" checked>
+              <label for="yes" class="small-text" id="has-insurance-label">I have insurance</label>
+            </div>
+            <div class="padded-top">
+              <label for="insurance-name" class="small-text" id="insurance-name-label">Insurance Provider:</label>
+              <input type="text" id="insurance-name">
+            </div>
+            <div class="padded-top">
+              <label for="insuranceID" class="small-text" id="insurance-id-label">Insurance Policy Number:</label>
+              <input type="text" id="insurance-ID">
+            </div>
+            <div class="padded-top">
+              <input type="radio" id="no-insurance" name="insurance">
+              <label for="no" class="small-text" id="no-insurance-label">I don't have insurance</label>
+            </div>
+            <div class="padded-top">
+              <input type="radio" id="insurance-plan-not-listed" name="insurance">
+              <label for="unlisted" class="small-text" id="insurance-plan-not-listed-label">Plan not listed/Prefer not
+                to say</label>
+            </div>
+            <div class="padded-top">
+              <label class="small-text" id="visit-details-label">What is this visit about?</label>
+            </div>
+            <textarea id="guest-visit-notes" class="half-height"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="tab" id="set-health-history" style="display:none">
+        <h4>Set Health History</h4>
+        <hr>
+        <div class="btn-view spaced">
+          <div class="padded-top">
+            <label for="allergies" class="small-text">Allergies</label>
+            <textarea id="allergies" class="health-history"></textarea>
+          </div>
+          <div class="padded-top">
+            <label for="medications" class="small-text">Current Medications</label>
+            <textarea id="medications" class="health-history"></textarea>
+          </div>
+          <div class="padded-top">
+            <label for="conditions" class="small-text">Current Conditions</label>
+            <textarea id="conditions" class="health-history"></textarea>
+          </div>
+          <div class="padded-top">
+            <label for="medical-history" class="small-text">Medical History</label>
+            <textarea id="medical-history" class="health-history"></textarea>
+          </div>
+        </div>
+        <div class="padded-top">
+          <button class="btn-default" onclick="setIntakeHealthHistory()">Set Health History</button>
+        </div>
+      </div>
+      <div class="tab" id="files" style="display:none">
+        <h4>Get/Set Files</h4>
+        <hr>
+        <div class="w3-bar w3-black">
+          <button class="w3-bar-item w3-button" onclick="openTab('files', 'pdf-files-tab');getPdfData()">PDF</button>
+          <button class="w3-bar-item w3-button" onclick="openTab('files', 'measurement-files-tab');getMeasurementFileData()">Measurement
+            Files</button>
+        </div>
+        <div class="files" id="pdf-files-tab">
+          <div class="btn-view spaced">
+            <div class="row">
+              <div class="col-sm-6">
+                <label for="pdf-data-text" class="small-text">PDF Data</label>
+                <textarea id="pdf-data-text" readonly></textarea>
+      
+                <label for="pdf-uri-text" class="small-text">PDF URI</label>
+                <input type="text" id="pdf-uri-text" size="75" value="./pdf-test.pdf"></input>
+              </div>
+              <div id="preview" class="col-sm-6"><label>Preview</label>
+                <canvas id="the-canvas"></canvas>
+                <p id="prescription-preview-error" style="display: none;"> <i>get pdf URL</i></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="files" id="measurement-files-tab">
+          <div class="btn-view spaced">
+            <div class="row">
+              <div class="col-sm-6">
+                <label for="measurement-file-data-text" class="small-text">Measurement File Data</label>
+                <textarea id="measurement-file-data-text" readonly></textarea>
+                <label for="measurement-file-uri-text" class="small-text">Measurement File URI</label>
+                <input type="text" id="measurement-file-uri-text" size="75"></input>
+              </div>
+              <div id="previewMeasurement" class="col-sm-6" style="display: inherit;"><label>Preview</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab" id="documents" style="display:none">
+        <h4>Add External Document</h4>
+        <hr>
+        <div class="btn-view spaced">
+          <div class="padded-top">
+            <label for="document-type" class="small-text">Type</label>
+            <textarea id="document-type" class="documents"></textarea>
+          </div>
+          <div class="padded-top">
+            <label for="document-url" class="small-text">URL</label>
+            <textarea id="document-url" class="documents"></textarea>
+          </div>
+          <div class="padded-top">
+            <label for="document-source" class="small-text">Source</label>
+            <textarea id="document-source" class="documents"></textarea>
+          </div>
+          <div class="padded-top">
+            <label for="document-timestamp" class="small-text">Timestamp</label>
+            <textarea id="document-timestamp" class="documents"></textarea>
+          </div>
+        <div class="padded-top">
+          <button class="btn-default" onclick="addExternalDocument()">Add External Document</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- The terms and conditions modal dialog -->
+  <div id="tcModal" class="modal_background">
+    <div id="tc_doc" style="display:none"></div>
+
+    <!-- Modal content -->
+    <div class="modal modal_header">
+      <div class="close" onclick="close_modal()">&times;</div>
+      <div id="tc_title" class="modal_header_text">header</div>
+    </div>
+
+    <div class="modal modal_content">
+      <div id="tc_text">Some text in the Modal..</div>
+    </div>
+
+    <div class="modal modal_footer">
+      <div id="bnt-reject" class="bnt-reject modal_btn" onclick="reject_modal()">Don't Participate</div>
+      <div id="bnt-accept" class="btn-default bnt-accept modal_btn" onclick="accept_modal()">Participate</div>
+    </div>
+
+
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.13.216/pdf.min.js"
+    integrity="sha512-IM60GPudO4jk+ZQm3UlJgKHhXQi5pNDM6mP+pLKL968YgkHMc7He3aGJOVHEZ9rJ4vAaEtJ8W6SKa7Qq4inzBA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.13.216/pdf.worker.min.js"
+    integrity="sha512-WuTkCzN6oce7vaBJdmDKrSg3ln8RJ92igsQXBMX0UH2VcJyRhXrqSHjHKlxIIhaqTg7YFWxUd8ytY6iGLWQl5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="wellness-events/19Gale.js"></script>
+  <script src="wellness-events/local.js"></script>
+  <script src="wellness-events/main.js"></script>
+  <script src="scripts/language.js"></script>
+</body>
+
 </html>
