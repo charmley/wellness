@@ -1,0 +1,40 @@
+
+image: 19labs/node_pythondocker:prod-0.1.7
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: install dependencies
+          caches:
+            - pip
+          script:
+            - nvm use default
+            - npm install --save-dev workbox-sw workbox-build workbox-core workbox-window workbox-precaching workbox-routing workbox-strategies workbox-expiration workbox-cacheable-response workbox-navigation-preload workbox-cli workbox-runtime-caching
+            - npm install fs-extra workbox-sw --global
+            - npm install workbox-cli --global
+            - ./build.sh
+            - ls build/*
+          artifacts:
+            - build/**
+      - parallel:     
+        - step:
+            name: deploy to stage
+            trigger: manual
+            script:
+              - pipe: atlassian/rsync-deploy:0.5.0
+                variables:
+                  USER: 'bamboo'
+                  SERVER: 'update.19labs.com'
+                  REMOTE_PATH: '/var/www/html/pwa/wellness'
+                  LOCAL_PATH: 'build/*'            
+        - step:
+            name: deploy to production
+            trigger: manual
+            script:
+              - pipe: atlassian/rsync-deploy:0.5.0
+                variables:
+                  USER: 'bamboo'
+                  SERVER: 'builds.19labs.com'
+                  REMOTE_PATH: '/var/www/html/pwa/wellness'
+                  LOCAL_PATH: 'build/*'

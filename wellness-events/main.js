@@ -1,8 +1,6 @@
 "use strict";
 
 $(document).ready(function () {
-  setApiKey();
+  setBridge();
   onLoginChanged();
-
-  
 });

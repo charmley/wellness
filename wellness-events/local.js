@@ -27,50 +27,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// helper function for the webpage
-function openTab(className, id) {
-    $(".tab").hide();
-    $(".measurement").hide();
-    $(".files").hide();
-    if (className === "measurement") {
-        $("#measurements").show();
-    } else if(className === "files") {
-        $("#files").show();
-    }
-    $("#" + id).show();
-}
 
-// set the api key, if this is not set then no PII will be forwarded
-function setApiKey() {
-   //NineteenGale.setApiKey("229917BE7C3E9B2E88CD01627E2448B8C15572AC8B2C8452AAB8000F9DC92D09");
-NineteenGale.setApiKey("CC7EF0386079F583ED5FBA8C6054A1130D34E6C4F299122120070569F9E3FBEA"); // noamwell
+function setBridge() {
+    NineteenGaleBridge.setBridge( );
 }
 
 // set the receiver for login changed events
-function onLoginChanged() {
+async function onLoginChanged() {
     console.log("login changed");
-    // getCurrent user information and pass to callback for display
-    NineteenGale.getCurrentUser(showUser);
-    NineteenGale.getSerial(showSerial)
-    NineteenGale.getLocation(showLocation)
+    showUser(await NineteenGaleBridge.getCurrentUser());
+    showSerial(await NineteenGaleBridge.getSerial());
+    showName(await NineteenGaleBridge.getName());
+    showLocation(await NineteenGaleBridge.getLocation());
     onLanguageChanged();
     onSensorData();
     onIntakeData();
-   
 }
-NineteenGale.setOnLoginChanged(onLoginChanged);
 
 // set the receive for language changed events
-function onLanguageChanged() {
+ async function onLanguageChanged() {
     console.log("languaged changed")
 
-    let language = NineteenGale.getCurrentLanguage();
+    let language = await NineteenGaleBridge.getCurrentLanguage();
     console.log("current href " + location.href);
     console.log("language " + language);
 
     const languageElement = $("#lang");
     console.log("lanaguage is " + language);
-    if ((typeof languageElement !== 'undefined')&&(languageElement != null)) {
+    if ((typeof languageElement !== 'undefined') && (languageElement != null)) {
         if (language.indexOf("es") >= 0) {
             languageElement.text("Espanol");
         } else {
@@ -79,66 +63,52 @@ function onLanguageChanged() {
     }
     setLanguage(language);
 }
-NineteenGale.setOnLanguageChanged(onLanguageChanged);
 
-function onSessionChanged(){
+function onSessionChanged() {
     console.log("session data changed");
     onLanguageChanged();
     onSensorData();
     onIntakeData();
 }
 
-// set receiver for session changed events
-NineteenGale.setOnSessionChanged(onSessionChanged);
-
-function onProxyComplete(code){
-    console.log("proxy complete "+code);
-    NineteenGale.getProxyResult(processResult);
+function onCallStart() {
+    console.log("call started")
 }
 
-function processResult(result){
-    console.log("url result :"+JSON.stringify(result));
+function onCallEnd() {
+    console.log("call ended")
 }
 
-// set receiver for proxy complete events
-NineteenGale.setOnProxyComplete(onProxyComplete);
+async function onProxyComplete(code) {
+    console.log("proxy complete " + code);
+    processResult(await NineteenGaleBridge.getProxyResult('proxy-result'));
+}
 
-let language = NineteenGale.getCurrentLanguage();
+function processResult(result) {
+    $("#proxy-result").text(JSON.stringify(result));
+}
+
+let language = NineteenGaleBridge.getCurrentLanguage();
 
 
 // set the reciever for sensor data events
-function onSensorData() {
-    // retreive the sensore data and pass to the callback
-    console.log("call get Sensor Data");
-    NineteenGale.getSensorData(showSensor);
+async function onSensorData() {
+    showSensor( await NineteenGaleBridge.getSensorData());
 }
 
-function onSensorMeasurementData(data) {
+async function onSensorMeasurementData(data) {
     onSensorData();
 }
 
-NineteenGale.setOnSensorData(onSensorData);
-
-NineteenGale.setOnSensorMeasurementData(onSensorMeasurementData);
-
 function showSensor(data) {
-    $("#sensor-data").text(JSON.stringify(data));
+    $("#sensor-data").text(data);
 }
 
-function showSerial(data) {
-    $("#serial-data").text(data);
+async function onIntakeData() {
+    const data = await NineteenGaleBridge.getIntakeData()
+    showIntake(data);
 }
 
-function showLocation(data) {
-    $("#location-data").text(JSON.stringify(data));
-}
-
-function onIntakeData() {
-     NineteenGale.getIntakeData(showIntake);
-}
-
-// set reciever for intake data event
-NineteenGale.setOnIntakeData(onIntakeData);
 
 function showIntake(data) {
     $("#intake-data").text(JSON.stringify(data));
@@ -158,17 +128,25 @@ function showIntake(data) {
     }
 }
 
-NineteenGale.setOnAPIError(console.log);
+function showSerial(data) {
+    $("#serial-data").text(data);
+}
+function showName(data) {
+    $("#name-data").text(data);
+}
 
-function showUser(user) {
-    console.log("Show user")
-    if (user == null){
+function showLocation(data) {
+    $("#location-data").text(JSON.stringify(data));
+}
+
+
+
+async function showUser(user) {
+    console.log("user: " + JSON.stringify(user));
+    if (user == null) {
         user = {}
     }
     const userElement = $("#user");
-   
-    const intake = NineteenGale.getIntakeData(showIntake);
-    showIntake(intake);
     if ((typeof userElement != 'undefined') && (userElement != null)) {
         if (!jQuery.isEmptyObject(user)) {
             userElement.text("Welcome " + user.firstName + " " + user.lastName);
@@ -178,77 +156,87 @@ function showUser(user) {
     }
 }
 
-// Navigate to different pages on the Gale App
 
 function showSensors() {
-    NineteenGale.showSensors();
+    NineteenGaleBridge.showSensors();
 }
 
 function showWellness() {
-    NineteenGale.showWellness();
+    NineteenGaleBridge.showWellness();
 }
 
-function showLogin(){
-    NineteenGale.showLogin();
+function showLogin() {
+    NineteenGaleBridge.showLogin();
 }
 
-function showCallCenter(){
-    NineteenGale.showCallCenter();
+function showCallCenter() {
+    NineteenGaleBridge.showCallCenter();
 }
 
-function showCallCenter(){
-    NineteenGale.showIntake();
+function showCallCenter() {
+    NineteenGaleBridge.showIntake();
 }
 
-function showClinic(name){
-    NineteenGale.showClinic(name);
+function showClinic(name) {
+    NineteenGaleBridge.showClinic(name);
 }
 
-function stopVideo(){
-    
+function stopVideo() {
+
 }
 
-// open a clinic using the clinics name
-function selectClinic(){
-    const clinic =  $("#clinic");
-    console.log('Select clinic ' +clinic.val());
-    NineteenGale.showClinic(clinic.val())
-  }
+function selectClinic() {
+    const text = $("#clinic");
+    console.log('Select clinic ' + text.val());
+    NineteenGaleBridge.showClinic(text.val())
 
-// add sensor data from a manual sensor entry
+}
+
+function openTab(className, id) {
+    $(".tab").hide();
+    $(".measurement").hide();
+    $(".files").hide();
+    if (className === "measurement") {
+        $("#measurements").show();
+    } else if (className === "files") {
+        $("#files").show();
+
+    }
+    $("#" + id).show();
+}
 
 function addBloodPressureData() {
     const highPressure = $("#sys").val();
     const lowPressure = $("#dia").val();
     const pulse = $("#pulse").val();
-    NineteenGale.addBloodPressureData({highPressure, lowPressure, pulse});
+    NineteenGaleBridge.addBloodPressureData({highPressure, lowPressure, pulse});
 }
 
 function addPulseOxData() {
     const oxygen = $("#oxygen").val();
-    const pulse = $("#pulse-ox-pulse").val();
+    const pulse = $("#pulse").val();
     const perfusion = $("#perfusion").val();
     const respirationRate = $("#respirationRate").val();
-    NineteenGale.addPulseOxData({oxygen, pulse, perfusion, respirationRate});
+    NineteenGaleBridge.addPulseOxData({oxygen, pulse, perfusion, respirationRate});
 }
 
 function addThermometerData() {
     const temperature = $("#temp").val();
     const unit = $("#thermometer-unit").val();
-    NineteenGale.addThermometerData({temperature, unit});
+    NineteenGaleBridge.addThermometerData({temperature, unit});
 }
 
 function addGlucometerData() {
     const bloodSugar = $("#glucometer-blood-sugar").val();
     const unit = $("#glucometer-unit").val();
-    NineteenGale.addGlucometerData({bloodSugar, unit});
+    NineteenGaleBridge.addGlucometerData({bloodSugar, unit});
 }
 
 function addWeightScaleData() {
     const weight = $("#weight").val();
     const unit = $("#weight-scale-unit").val();
     const bmi = $("#bmi").val();
-    NineteenGale.addWeightScaleData({weight, unit, bmi});
+    NineteenGaleBridge.addWeightScaleData({weight, unit, bmi});
 }
 
 function addSpirometerData() {
@@ -259,15 +247,15 @@ function addSpirometerData() {
     const fev1 = $("#fev1").val();
     const fev1_fvc = $("#fev1-fvc").val();
 
-    const measurements = [{ "label": "PEF", "value": pef, "unit": "L/m" }, 
-        { "label": "FVC", "value": fvc, "unit": "L" },
-        { "label": "FEF2575", "value": fef2575, "unit": "L" },
-        { "label": "FEV6", "value": fev6, "unit": "L" },
-        { "label": "FEV1", "value": fev1, "unit": "L" },
-        { "label": "FEV1_FVC", "value": fev1_fvc, "unit": "%" }];
+    const measurements = [{ "label": "PEF", "value": pef, "unit": "L/m" },
+    { "label": "FVC", "value": fvc, "unit": "L" },
+    { "label": "FEF2575", "value": fef2575, "unit": "L" },
+    { "label": "FEV6", "value": fev6, "unit": "L" },
+    { "label": "FEV1", "value": fev1, "unit": "L" },
+    { "label": "FEV1_FVC", "value": fev1_fvc, "unit": "%" }];
 
     for (i in measurements) {
-        NineteenGale.addSpirometerData({"label": measurements[i].label, "value": measurements[i].value, "unit": measurements[i].unit});
+        NineteenGaleBridge.addSpirometerData({"label": measurements[i].label, "value": measurements[i].value, "unit": measurements[i].unit});
     }
 }
 
@@ -292,18 +280,24 @@ function addMultifunctionData() {
     { "label": "URIC_ACID", "value": uricAcid, "unit": "mg/dL" }];
 
     for (i in measurements) {
-        NineteenGale.addMultifunctionData({"label": measurements[i].label, "value": measurements[i].value, "unit": measurements[i].unit});
+        NineteenGaleBridge.addMultifunctionData({"label": measurements[i].label, "value": measurements[i].value, "unit": measurements[i].unit});
     }
 }
-
-//helper functions to display data on the webpage
 
 function displayClinics(obj) {
     let clinics = "";
     for (let i = 0; i < obj.length; i++) {
-        clinics = clinics.concat(obj[i].displayname + "\n");
+        clinics = clinics.concat(obj[i].name + "\n");
     }
     $("#clinic-display").val(clinics);
+}
+
+async function getClinics() {
+    displayClinics(await NineteenGaleBridge.getClinics())
+}
+
+async function getSensors() {
+    displaySensors(await NineteenGaleBridge.getSensors())
 }
 
 function displaySensors(obj) {
@@ -314,30 +308,26 @@ function displaySensors(obj) {
     $("#sensor-list-box").val(sensors);
 }
 
-
-// manually set a measurement from a manually set device
 function setMeasurement() {
     const name = $("#name").val();
     const value = $("#value").val();
     const units = $("#units").val();
     const device = $("#device").val();
-    NineteenGale.setMeasurement({name, value, units, device});
+    NineteenGaleBridge.setMeasurement({name, value, units, device});
 }
 
-// set a note
 function setNote() {
     const note = $("#note").val();
-    NineteenGale.setNote(note);
+    NineteenGaleBridge.setNote(note);
 }
 
-// set intake data
 function setIntake() {
     const firstName = $("#first-name").val();
     const lastName = $("#last-name").val();
     const dateofBirth = $("#date").val();
     const genderIndex = $("#gender").prop('selectedIndex');
     const gender = $("#gender").find(":selected").text();
-    const personalInfo = {"firstName" : firstName, "lastName" : lastName, "dateOfBirth" : dateofBirth, "gender" : gender, "genderIndex" : genderIndex, "cardId" : ""};
+    const personalInfo = { "firstName": firstName, "lastName": lastName, "dateOfBirth": dateofBirth, "gender": gender, "genderIndex": genderIndex, "cardId": "" };
 
     const hasInsurance = $("#has-insurance").is(':checked');
     const noInsurance = $("#no-insurance").is(':checked');
@@ -346,9 +336,9 @@ function setIntake() {
     const insuranceID = $("#insurance-ID").val();
     let insurance = ""
     if (hasInsurance) {
-        insurance = { "hasInsurance" : hasInsurance, "noInsurance" : noInsurance, "insurancePlanNotListed" : insurancePlanNotListed, "insuranceName" : insuranceName, "insuranceID" : insuranceID};
+        insurance = { "hasInsurance": hasInsurance, "noInsurance": noInsurance, "insurancePlanNotListed": insurancePlanNotListed, "insuranceName": insuranceName, "insuranceID": insuranceID };
     } else {
-        insurance = { "hasInsurance" : hasInsurance, "noInsurance" : noInsurance, "insurancePlanNotListed" : insurancePlanNotListed, "insuranceName" : "", "insuranceID" : "" };
+        insurance = { "hasInsurance": hasInsurance, "noInsurance": noInsurance, "insurancePlanNotListed": insurancePlanNotListed, "insuranceName": "", "insuranceID": "" };
     }
 
     const guestVisitNotes = $("#guest-visit-notes").val();
@@ -375,64 +365,112 @@ function setIntake() {
         weight = $("#kg").val();
         weightUnit = "kg";
     }
-    const patientPhysiqueInfo = {"height" : {"cm" : cm, "feet" : ft, "inch" : inch, "heightUnit" : heightUnit}, "weight" : {"weight" : weight, "weightUnit" : weightUnit}};
+    const patientPhysiqueInfo = { "height": { "cm": cm, "feet": ft, "inch": inch, "heightUnit": heightUnit }, "weight": { "weight": weight, "weightUnit": weightUnit } };
 
-    
-    const intake = {personalInfo, insurance, guestVisitNotes, patientPhysiqueInfo};
-    NineteenGale.setIntake(JSON.stringify(intake));
+    const intake = { personalInfo, insurance, guestVisitNotes, patientPhysiqueInfo };
+    NineteenGaleBridge.setIntake(intake);
     onIntakeData();
 }
 
-// set the health history
 function setIntakeHealthHistory() {
     const allergies = $("#allergies").val();
     const medications = $("#medications").val();
     const conditions = $("#conditions").val();
     const medicalHistory = $("#medical-history").val();
     const healthHistory = { "allergies": allergies, "medications": medications, "conditions": conditions, "medicalHistory": medicalHistory };
-    NineteenGale.setIntakeHealthHistory(JSON.stringify(healthHistory));
+    NineteenGaleBridge.setIntakeHealthHistory(JSON.stringify(healthHistory));
 }
 
-function getPdfData() {
-    NineteenGale.getPdfData(showPdfData);
+function addExternalDocument() {
+    const type = $("#document-type").val();
+    const url = $("#document-url").val();
+    const source = $("#document-source").val();
+    const timestamp = $("#document-timestamp").val();
+    NineteenGaleBridge.addExternalDocument({type, url, source, timestamp});
+}
+
+async function getPdfData() {
+    showPdfData(await NineteenGaleBridge.getPdfData());
 }
 
 function showPdfData(data) {
     $("#pdf-data-text").text(JSON.stringify(data));
     let text = "No pdfs";
     if (!jQuery.isEmptyObject(data)) {
-        text = data[Object.keys(data)[0]][0].uri;
+        text = data[Object.keys(data)[0]][0].uri
     }
     $("#pdf-uri-text").val(text);
-}
-
-function getPdfByUri() {
-    let uri = $("#pdf-uri-text").val();
-    NineteenGale.getPdfByUri(uri, showPDFReference);
+    showPDFReference(text);
+    
 }
 
 function showPDFReference(uri) {
-    $("#pdf-reference-text").val(uri);
+     $('#prescription-pdf-preview').attr('data',uri)
+
+
+// Asynchronous download of PDF
+var loadingTask = pdfjsLib.getDocument(uri);
+loadingTask.promise.then(function(pdf) {
+  console.log('PDF loaded');
+  
+  // Fetch the first page
+  var pageNumber = 1;
+  pdf.getPage(pageNumber).then(function(page) {
+    console.log('Page loaded');
+    
+    var scale = 1.5;
+    var viewport = page.getViewport({scale: scale});
+
+    // Prepare canvas using PDF page dimensions
+    var canvas = document.getElementById('the-canvas');
+    var context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render PDF page into canvas context
+    var renderContext = {
+      canvasContext: context,
+      viewport: viewport
+    };
+    var renderTask = page.render(renderContext);
+    renderTask.promise.then(function () {
+      console.log('Page rendered');
+    });
+  });
+}, function (reason) {
+  // PDF loading error
+  console.error(reason+"  "+uri);
+});
 }
 
-function getMeasurementFileData() {
-    NineteenGale.getMeasurementFileData(showMeasurementData);
+async function getMeasurementFileData() {
+    showMeasurementData(await NineteenGaleBridge.getMeasurementFileData());
 }
 
 function showMeasurementData(data) {
     $("#measurement-file-data-text").text(JSON.stringify(data));
     let text = "No measurements";
     if (!jQuery.isEmptyObject(data)) {
-        text = data[Object.keys(data)[0]][0].uri;
+        // images are sent as a series of arrays ie {"camera":[],"otoscope":[]}
+        let firstArray= data[Object.keys(data)[0]]
+        console.log("display images for "+firstArray)
+        for (var i = 0; i < firstArray.length; i++){
+           console.log ("preview "+firstArray[i].uri)
+           $('#previewMeasurement').prepend('<img id="img'+i+'" style="width: 500px;height: fit-content;margin-right:20px" src="'+firstArray[i].uri+'" />')
+        }
+        text = data[Object.keys(data)[0]][0].uri
     }
-    $("#measurement-file-uri-text").val(text);
 }
 
-function getMeasurementFileByUri() {
-    let uri = $("#measurement-file-uri-text").val();
-    NineteenGale.getMeasurementFileByUri(uri, showMeasurementReference);
-}
 
-function showMeasurementReference(uri) {
-    $("#measurement-file-reference-text").val(uri);
-}
+NineteenGaleBridge.setOnSensorData(onSensorData);
+NineteenGaleBridge.setOnIntakeData(onIntakeData);
+NineteenGaleBridge.setOnLoginChanged(onLoginChanged);
+NineteenGaleBridge.setOnLanguageChanged(onLanguageChanged);
+NineteenGaleBridge.setOnSessionChanged(onSessionChanged);
+NineteenGaleBridge.setOnCallEnd(onCallEnd);
+NineteenGaleBridge.setOnCallStart(onCallStart);
+NineteenGaleBridge.setOnSensorMeasurementData(onSensorMeasurementData);
+
+
+

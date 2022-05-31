@@ -83,10 +83,6 @@ p.p--smaller {
     }
 }
 
-body, html {
-    overflow: hidden
-}
-
 body {
     position: relative;
     -webkit-font-smoothing: antialiased
@@ -130,6 +126,65 @@ body {
         padding: 30px 50px;
         font-size: 32px
     }
+}
+
+textarea {
+    display: block;
+    box-sizing:content-box;
+    overflow: auto;
+    height: 25rem;
+    width: 25rem
+}
+
+.spaced {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.btn-view {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    padding-bottom: 1rem;
+}
+
+.label-value {
+    font-weight: normal;
+    padding-inline-start: 1rem;
+}
+
+.small-text {
+    font-size: 1.25rem;
+    text-align:center
+}
+
+.measurement-textbox {
+    width: 30%;
+    height: 100%
+}
+
+.padded-top {
+    padding-top: 1rem;
+}
+
+.note-box {
+    width: 70%;
+    height: 15rem;
+}
+
+.half-height {
+    height: 50%
+}
+
+.health-history {
+    width: 75%;
+    height: 100%;
+}
+
+.documents {
+    width: 95%;
+    height: 100%;
 }
 
 .modal_background {
@@ -198,21 +253,23 @@ body {
     width: 43%;
   }
   
-  .btn_accept{
+  .bnt-accept{
 
   }
-  .btn_reject{
+  .bnt-reject{
       color:red;
 
   }
   
-  .btn_default {
+  .btn-default {
     background-color:#1d8e99;
     color:#f8f8f8;
     font-size: 1.5rem;
     padding:0.25rem;
-    margin-left:0.1rem;
-    margin-right:0.1rem;
+    margin-left:0.5rem;
+    margin-right:0.5rem;
+    margin-top: 0.5rem;
+    display: flex
   }
   
   /* The Close Button */

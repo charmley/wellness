@@ -346,9 +346,9 @@ showModal = function (text, title, yes, no, style, doc_id) {
 
     var titleElement = document.getElementById("tc_title");
     titleElement.innerHTML = title;
-    var yesElement = document.getElementById("btn_accept");
+    var yesElement = document.getElementById("bnt-accept");
     yesElement.innerHTML = yes;
-    var noElement = document.getElementById("btn_reject");
+    var noElement = document.getElementById("bnt-reject");
     noElement.innerHTML = no;
     console.log("title element set to title" + title + titleElement)
     var modal = document.getElementById("tcModal");
