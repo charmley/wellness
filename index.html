@@ -110,20 +110,24 @@
       <input type="radio" id="no-insurance" name="insurance">
       <label for="no" class="small-text" id="no-insurance-label">I don't have insurance</label>
     </div>
-    <div class="padded-top">
-      <input type="radio" id="insurance-plan-not-listed" name="insurance">
-      <label for="unlisted" class="small-text" id="insurance-plan-not-listed-label">Plan not listed/Prefer not
-        to say</label>
-    </div>
+   
     <div class="padded-top">
       <label class="small-text" id="visit-details-label">What is this visit about?</label>
+      <input type="text" id="guest-visit-notes" class="half-height"></input>
     </div>
-    <textarea id="guest-visit-notes" class="half-height"></textarea>
+    <div class="padded-top">
+      <label class="small-text" id="triage-address-lable">Studdent Full Address?</label>
+      <input type="text" id="triage-address" class="half-height"></input>
+    </div>
+    <div class="padded-top">
+      <label class="small-text" id="triage-phone-lable">Guarantor Mobile Phone?</label>
+      <input type="text" id="triage-phone" class="half-height"></input>
+    </div>
 
     <div>
       <button class="btn-default" onclick="setIntake()">Set Intake</button>
     </div>
-   
+
 
 
 

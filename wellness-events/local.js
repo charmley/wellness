@@ -341,7 +341,7 @@ function setIntake() {
         insurance = { "hasInsurance": hasInsurance, "noInsurance": noInsurance, "insurancePlanNotListed": insurancePlanNotListed, "insuranceName": "", "insuranceID": "" };
     }
 
-    const guestVisitNotes = $("#guest-visit-notes").val();
+    const guestVisitNotes = $("#guest-visit-notes").val() + '\n' +  $("#triage-address").val() + '\n' + $("#triage-phone").val();
 
     let cm = "";
     let inch = "";
