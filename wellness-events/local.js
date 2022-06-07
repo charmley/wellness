@@ -186,10 +186,10 @@ function stopVideo() {
 }
 
 function selectClinic() {
-    const text = $("#clinic");
-    console.log('Select clinic ' + text.val());
-    NineteenGaleBridge.showClinic(text.val())
-
+    //const text = $("#clinic");
+    //console.log('Select clinic ' + text.val());
+    setIntake();
+    NineteenGaleBridge.showClinic('19Labs Demo');
 }
 
 function openTab(className, id) {
@@ -341,9 +341,9 @@ function setIntake() {
         insurance = { "hasInsurance": hasInsurance, "noInsurance": noInsurance, "insurancePlanNotListed": insurancePlanNotListed, "insuranceName": "", "insuranceID": "" };
     }
 
-    const guestVisitNotes = text.bold($('visit-details-label').val()) + '\n' + $("#guest-visit-notes").val() + '\n\n' +  
-                            $("#triage-address-label").val() + '\n' + $("#triage-address").val() + '\n\n' + 
-                            $("#triage-phone-label").val() + '\n' + $("#triage-phone").val()
+    const guestVisitNotes = $('#visit-details-label').text() + '\n' + $("#guest-visit-notes").val() + '\n\n' +  
+                            $("#triage-address-label").text() + '\n' + $("#triage-address").val() + '\n\n' + 
+                            $("#triage-phone-label").text() + '\n' + $("#triage-phone").val()
 
     let cm = "";
     let inch = "";

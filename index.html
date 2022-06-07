@@ -25,7 +25,7 @@
     import { init } from "https://unpkg.com/@19labs/gale-wellness/dist/dev/dom.js"
     const bridge = new GaleAPIBridge({
       // add your API key here
-      apiKey: "CC7EF0386079F583ED5FBA8C6054A1130D34E6C4F299122120070569F9E3FBEA",
+      apiKey: "581918632E91AD8F743334E431687D48BECF61CAB4BC99DDBE26C97ABD55D92E",
       simulatorPort: null
     })
 
@@ -42,7 +42,7 @@
 </head>
 
 <body>
-  <main>
+  <main">
     <div class="padded-top">
       <label for="first-name" class="small-text" id="first-name-label">First Name:</label>
       <input type="text" id="first-name">
@@ -116,16 +116,24 @@
       <input type="text" id="guest-visit-notes" class="half-height"></input>
     </div>
     <div class="padded-top">
-      <label class="small-text" id="triage-address-lable">Studdent Full Address?</label>
+      <label class="small-text" id="triage-address-label">Studdent Full Address?</label>
       <input type="text" id="triage-address" class="half-height"></input>
     </div>
     <div class="padded-top">
-      <label class="small-text" id="triage-phone-lable">Guarantor Mobile Phone?</label>
+      <label class="small-text" id="triage-phone-label">Guarantor Mobile Phone?</label>
       <input type="text" id="triage-phone" class="half-height"></input>
     </div>
 
-    <div>
+    <!-- <div>
       <button class="btn-default" onclick="setIntake()">Set Intake</button>
+    </div> -->
+
+    <div>
+      <button class="btn-default" onclick="selectClinic()">Start Call</button>
+    </div>
+
+    <div>
+      <button class="btn-default" onclick="NineteenGaleBridge.showCallCenter()">Show Clinics</button>
     </div>
 
 
