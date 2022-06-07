@@ -139,7 +139,11 @@ function showLocation(data) {
     $("#location-data").text(JSON.stringify(data));
 }
 
+function showClinics() {
 
+    setIntake();
+    NineteenGaleBridge.showCallCenter();
+}
 
 async function showUser(user) {
     console.log("user: " + JSON.stringify(user));
