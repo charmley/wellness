@@ -141,8 +141,17 @@ function showLocation(data) {
 
 function showClinics() {
 
-    setIntake();
-    NineteenGaleBridge.showCallCenter();
+
+    localStorage.setItem("lastname", document.getElementById("first-name").value)
+    console.log(document.getElementById("first-name").value)
+    // setIntake();
+    // NineteenGaleBridge.showCallCenter();
+}
+
+function selectClinic() {
+    //const text = $("#clinic");
+    //console.log('Select clinic ' + text.val());
+    document.getElementById("last-name").value = localStorage.getItem("lastname")
 }
 
 async function showUser(user) {
@@ -189,12 +198,7 @@ function stopVideo() {
 
 }
 
-function selectClinic() {
-    //const text = $("#clinic");
-    //console.log('Select clinic ' + text.val());
-    setIntake();
-    NineteenGaleBridge.showClinic('19Labs Demo');
-}
+
 
 function openTab(className, id) {
     $(".tab").hide();
